@@ -1,0 +1,23 @@
+{
+  "name": "Cashlete Dev",
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "cashlete",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Python
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+        // Others
+        "GitLab.gitlab-workflow",
+        "streetsidesoftware.code-spell-checker",
+        "waderyan.gitblame"
+      ]
+    }
+  }
+}
