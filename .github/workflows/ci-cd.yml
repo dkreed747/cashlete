@@ -1,0 +1,83 @@
+name: Cashlete Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Run Black Linter
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Black
+        run: |
+          python -m pip install --upgrade pip
+          pip install black
+
+      - name: Run Black (check only)
+        run: black --check .
+
+  build:
+    name: Build Docker Image
+    runs-on: self-hosted
+    needs: lint
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t cashlete:latest -f ./.devcontainer/Dockerfile .
+
+  deploy_dockerhub:
+    name: Deploy Docker Image to Docker Hub
+    runs-on: self-hosted
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Tag and push Docker image to Docker Hub
+        run: |
+          docker tag money_competition:latest ${{ secrets.DOCKERHUB_USERNAME }}/money_competition:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/money_competition:latest
+
+  deploy_aws:
+    name: Deploy to AWS (stub)
+    runs-on: self-hosted
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy Docker image to AWS (stub)
+        run: |
+          echo "Stub: Deploying Docker image to AWS"
+          # Here you could add commands such as:
+          # docker tag cashlete:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/cashlete:latest
+          # aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+          # docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/cashlete:latest
+          # and then update your ECS service, Lambda function, or other AWS service accordingly.
