@@ -63,5 +63,5 @@ jobs:
 
       - name: Update ECS Service
         run: |
-          aws ecs update-service --cluster money-competition-cluster --service money-competition-service --force-new-deployment
+          aws ecs update-service --cluster cashlete-cluster --service cashlete --force-new-deployment
 
