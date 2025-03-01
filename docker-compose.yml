@@ -1,0 +1,36 @@
+name: cashlete
+
+services:
+  cashlete:
+      build:
+        dockerfile: ./.devcontainer/Dockerfile
+        target: release
+      develop:
+        watch:
+          - path: ./src/templates
+            action: sync
+            target: /app/src/templates
+          - path: ./src/static
+            action: sync
+            target: /app/src/static
+          - path: ./src
+            action: sync+restart
+            target: /app/src
+            ignore: 
+              - templates
+              - static
+      container_name: cashlete
+      volumes:
+        - dev_app_vol:/app
+        - flask_data_vol:/data
+      ports:
+        - 5000:5000
+      # stdin_open: true
+      # tty: true
+      # entrypoint: ["/bin/bash"]
+
+volumes:
+  dev_app_vol:
+    external: false
+  flask_data_vol:
+    external: false

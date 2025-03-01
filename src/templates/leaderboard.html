@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Leaderboard</h2>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">Home</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in leaderboard %}
+    <tr>
+      <td>{{ user.username }}</td>
+      <td>{{ user.score }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

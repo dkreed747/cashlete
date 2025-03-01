@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome, {{ current_user.username }}</h2>
+<h4>Your Current Score: {{ score }}</h4>
+<h4>Your Totals</h4>
+<ul>
+  <li>Needs: ${{ totals['needs'] }}</li>
+  <li>Wants: ${{ totals['wants'] }}</li>
+  <li>Savings: ${{ totals['savings'] }}</li>
+</ul>
+<a href="{{ url_for('leaderboard') }}" class="btn btn-info mb-3">View Leaderboard</a>
+<h4>Add a New Entry</h4>
+<form method="post" action="{{ url_for('add_entry') }}">
+  <div class="form-group">
+    <label for="category">Category</label>
+    <select name="category" class="form-control" id="category" required>
+      <option value="needs">Needs</option>
+      <option value="wants">Wants</option>
+      <option value="savings">Savings</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="amount">Amount ($)</label>
+    <input type="number" step="0.01" name="amount" class="form-control" id="amount" required>
+  </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input type="text" name="description" class="form-control" id="description">
+  </div>
+  <button type="submit" class="btn btn-success">Add Entry</button>
+</form>
+<h4 class="mt-4">Your Entries</h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>Category</th>
+      <th>Amount</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ entry.timestamp }}</td>
+      <td>{{ entry.category }}</td>
+      <td>{{ entry.amount }}</td>
+      <td>{{ entry.description }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
