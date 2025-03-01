@@ -59,7 +59,7 @@ jobs:
       - name: Tag and push Docker image to ECR
         run: |
           docker tag cashlete:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/dkreed747/cashlete/cashlete:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/cashlete:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/dkreed747/cashlete/cashlete:latest
 
       - name: Update ECS Service
         run: |
