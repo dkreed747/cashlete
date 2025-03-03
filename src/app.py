@@ -21,10 +21,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 @app.before_request
-def redirect_to_subpath():
-    print("In app")
-    if request.path == "/":
-        return redirect("cashlete/", code=302)  # Redirect root to subpath
+def fix_proxy_path():
+    if request.headers.get("X-Forwarded-Prefix"):
+        request.script_root = request.headers["X-Forwarded-Prefix"]
 
 # ----------------------
 # Models
