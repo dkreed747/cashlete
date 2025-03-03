@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Set the template folder relative to this file's location
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 app = Flask(__name__, template_folder=template_dir, static_url_path="/cashlete/static")
+app.config["APPLICATION_ROOT"] = "/cashlete"
 
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default-insecure-key')
 
