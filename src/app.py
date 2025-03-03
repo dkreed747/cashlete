@@ -24,7 +24,7 @@ login_manager.login_view = 'login'
 def redirect_to_subpath():
     print("In app")
     if request.path == "/":
-        return redirect(SUBPATH + "/", code=302)  # Redirect root to subpath
+        return redirect("cashlete/", code=302)  # Redirect root to subpath
 
 # ----------------------
 # Models
