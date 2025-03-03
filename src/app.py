@@ -69,7 +69,7 @@ def calculate_score(user):
 # ----------------------
 # Routes
 # ----------------------
-@app.route('/cashlete')
+@app.route('/cashlete/')
 @login_required
 def index():
     entries = Entry.query.filter_by(user_id=current_user.id).order_by(Entry.timestamp.desc()).all()
@@ -80,7 +80,7 @@ def index():
     score = calculate_score(current_user)
     return render_template('index.html', entries=entries, totals=totals, score=score)
 
-@app.route('/cashlete/add', methods=['POST'])
+@app.route('/cashlete/add/', methods=['POST'])
 @login_required
 def add_entry():
     category = request.form.get('category')
@@ -100,7 +100,7 @@ def add_entry():
     flash("Entry added", "success")
     return redirect(url_for('index'))
 
-@app.route('/cashlete/leaderboard')
+@app.route('/cashlete/leaderboard/')
 @login_required
 def leaderboard():
     users = User.query.all()
@@ -113,7 +113,7 @@ def leaderboard():
     leaderboard = sorted(leaderboard, key=lambda x: x['score'])
     return render_template('leaderboard.html', leaderboard=leaderboard)
 
-@app.route('/cashlete/register', methods=['GET', 'POST'])
+@app.route('/cashlete/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -129,7 +129,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html')
 
-@app.route('/cashlete/login', methods=['GET', 'POST'])
+@app.route('/cashlete/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -142,7 +142,7 @@ def login():
         flash("Invalid credentials", "danger")
     return render_template('login.html')
 
-@app.route('/cashlete/logout')
+@app.route('/cashlete/logout/')
 @login_required
 def logout():
     logout_user()
