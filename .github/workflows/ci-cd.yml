@@ -36,32 +36,32 @@ jobs:
           docker tag cashlete:latest ${{ secrets.DOCKER_USER }}/cashlete:latest
           docker push ${{ secrets.DOCKER_USER }}/cashlete:latest
 
-  deploy_aws:
-    name: Deploy to AWS ECS (Fargate)
-    runs-on: self-hosted
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  # deploy_aws:
+  #   name: Deploy to AWS ECS (Fargate)
+  #   runs-on: self-hosted
+  #   needs: build
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: us-east-2
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v2
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws-region: us-east-2
 
-      - name: Login to Amazon ECR
-        run: |
-          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com
+  #     - name: Login to Amazon ECR
+  #       run: |
+  #         aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com
 
-      - name: Tag and push Docker image to ECR
-        run: |
-          docker tag cashlete:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/dkreed747/cashlete:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/dkreed747/cashlete:latest
+  #     - name: Tag and push Docker image to ECR
+  #       run: |
+  #         docker tag cashlete:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/dkreed747/cashlete:latest
+  #         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/dkreed747/cashlete:latest
 
-      - name: Update ECS Service
-        run: |
-          aws ecs update-service --cluster cashlete-cluster --service cashlete --force-new-deployment
+  #     - name: Update ECS Service
+  #       run: |
+  #         aws ecs update-service --cluster cashlete-cluster --service cashlete --force-new-deployment
 
