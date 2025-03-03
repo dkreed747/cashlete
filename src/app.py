@@ -69,7 +69,7 @@ def calculate_score(user):
 # ----------------------
 # Routes
 # ----------------------
-@app.route('/')
+@app.route('/cashlete')
 @login_required
 def index():
     entries = Entry.query.filter_by(user_id=current_user.id).order_by(Entry.timestamp.desc()).all()
