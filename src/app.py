@@ -20,6 +20,12 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+@app.before_request
+def redirect_to_subpath():
+    print("In app")
+    if request.path == "/":
+        return redirect(SUBPATH + "/", code=302)  # Redirect root to subpath
+
 # ----------------------
 # Models
 # ----------------------
