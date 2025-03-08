@@ -73,13 +73,32 @@ def calculate_score(user):
 @app.route('/cashlete/')
 @login_required
 def index():
-    entries = Entry.query.filter_by(user_id=current_user.id).order_by(Entry.timestamp.desc()).all()
+    # Get query parameters for filtering and sorting
+    sort_by = request.args.get('sort', 'timestamp')  # Default: order by timestamp
+    filter_category = request.args.get('category', 'all')
+
+    query = Entry.query.filter_by(user_id=current_user.id)
+    if filter_category != 'all':
+        query = query.filter_by(category=filter_category)
+    if sort_by == 'cost':
+        query = query.order_by(Entry.amount.asc())
+    else:
+        query = query.order_by(Entry.timestamp.desc())
+    
+    entries = query.all()
+
     totals = {'needs': 0, 'wants': 0, 'savings': 0}
     for entry in entries:
         if entry.category in totals:
             totals[entry.category] += entry.amount
     score = calculate_score(current_user)
-    return render_template('index.html', entries=entries, totals=totals, score=score)
+    return render_template('index.html',
+                           entries=entries,
+                           totals=totals,
+                           score=score,
+                           selected_sort=sort_by,
+                           selected_category=filter_category)
+
 
 @app.route('/cashlete/add/', methods=['POST'])
 @login_required
@@ -149,6 +168,49 @@ def logout():
     logout_user()
     flash("Logged out", "success")
     return redirect(url_for('login'))
+
+@app.route('/cashlete/edit/<int:entry_id>/', methods=['GET', 'POST'])
+@login_required
+def edit_entry(entry_id):
+    entry = Entry.query.get_or_404(entry_id)
+    # Ensure that only the owner can edit the entry
+    if entry.user_id != current_user.id:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        category = request.form.get('category')
+        amount = request.form.get('amount')
+        description = request.form.get('description')
+        try:
+            amount = float(amount)
+        except ValueError:
+            flash("Invalid amount", "danger")
+            return redirect(url_for('edit_entry', entry_id=entry.id))
+        if category not in ['needs', 'wants', 'savings']:
+            flash("Invalid category", "danger")
+            return redirect(url_for('edit_entry', entry_id=entry.id))
+        entry.category = category
+        entry.amount = amount
+        entry.description = description
+        db.session.commit()
+        flash("Entry updated", "success")
+        return redirect(url_for('index'))
+    return render_template('edit_entry.html', entry=entry)
+
+
+@app.route('/cashlete/delete/<int:entry_id>/', methods=['POST'])
+@login_required
+def delete_entry(entry_id):
+    entry = Entry.query.get_or_404(entry_id)
+    # Ensure that only the owner can delete the entry
+    if entry.user_id != current_user.id:
+        flash("Unauthorized access", "danger")
+        return redirect(url_for('index'))
+    db.session.delete(entry)
+    db.session.commit()
+    flash("Entry deleted", "success")
+    return redirect(url_for('index'))
+
 
 # ----------------------
 # Database Initialization
