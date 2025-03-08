@@ -22,8 +22,9 @@ login_manager.login_view = 'login'
 
 @app.before_request
 def fix_proxy_path():
-    if request.headers.get("X-Forwarded-Prefix"):
-        request.script_root = request.headers["X-Forwarded-Prefix"]
+    prefix = request.headers.get("X-Forwarded-Prefix")
+    if prefix:
+        request.environ["SCRIPT_NAME"] = prefix
 
 # ----------------------
 # Models
